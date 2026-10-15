@@ -1,0 +1,110 @@
+.post {
+  max-width: 470px;
+  /* background: var(--ion-item-background, #fff); */
+  color: var(--ion-text-color, #262626);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Header: avatar + username */
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.post-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.profile-image {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--ion-item-background, #fff);
+}
+
+.post-image {
+  position: relative; /* lets the dots sit on top of the image */
+  background: #000;
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  pointer-events: none; /* don't block swiping */
+}
+
+.carousel-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transition: background 0.2s, transform 0.2s;
+}
+
+.carousel-dot.active {
+  background: #fff;
+  transform: scale(1.2);
+}
+
+.image-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.image-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.image-carousel img {
+  flex: 0 0 100%;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  scroll-snap-align: center;
+  display: block;
+}
+
+.location-image {
+  flex: 0 0 100%;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  scroll-snap-align: center;
+  display: block;
+}
+
+.post-details {
+  padding: 10px 12px 14px;
+}
+
+.post-details h2 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.post-details p {
+  margin: 0 0 4px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.post-details p:last-child {
+  margin-bottom: 0;
+  font-size: 12px;
+  opacity: 0.7;
+}

@@ -1,0 +1,38 @@
+.page-footer {
+  z-index: 10;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 50px;
+  padding-bottom: env(safe-area-inset-bottom, 0px); /* keeps icons clear of the phone's home bar */
+  box-sizing: content-box;
+}
+
+.page-footer > div {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  cursor: pointer;
+}
+
+.page-footer > div:active {
+  opacity: 0.5;
+}
+
+.page-footer img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Profile picture: round, like Instagram's last tab */
+.page-footer .profile-image {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  border: none;
+  border-radius: 0;
+}
