@@ -10,6 +10,9 @@ const PageFooter = ({ loggedInUser } : { loggedInUser: UserObject | null }) => {
       <div className="camera-button">
         <img src="./public/photo-camera.png" alt="photo-camera.png" />
       </div>
+      <div className="home-button" onClick={() => router.push('/home')}>
+        <img src="./public/home.png" alt="home-button photo"/>
+      </div>
       <div className="add-post-button" onClick={() => router.push('/add')}>
         <img src="./public/add_button.png" alt="add-button.png" />
       </div>

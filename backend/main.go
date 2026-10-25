@@ -13,15 +13,34 @@ import (
 
 	"bussin-buses/db"
 	"bussin-buses/domain"
+	auth "bussin-buses/jwt"
 	"bussin-buses/repository"
 	"bussin-buses/ws"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
+type registerRequest struct {
+	Username string `json:"username" binding:"required,min=3,max=30"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8,max=72"` // bcrypt ignores anything past 72 bytes
+}
+
+type loginRequest struct {
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
 func main() {
+	jwtSecret := []byte(os.Getenv("JWT_SECRET"))
+	if len(jwtSecret) == 0 {
+		log.Println("WARNING: JWT_SECRET not set, using an insecure dev secret")
+		jwtSecret = []byte("dev-only-secret-change-me")
+	} // $env:JWT_SECRET = "Vfpd2kWVm0S9xI68PQObzCF2mWp2UEKi2lLSQoYC9Jk"
+
 	database, err := db.Open("bussin.db")
 	if err != nil {
 		log.Fatal(err)
@@ -29,6 +48,7 @@ func main() {
 	defer database.Close()
 
 	busRepo := repository.NewSQLiteBusRepository(database)
+	userRepo := repository.NewSQLiteUserRepository(database)
 
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -140,6 +160,70 @@ func main() {
 
 		hub.Broadcast("post_added", bus)
 		c.JSON(http.StatusCreated, bus)
+	})
+
+	router.POST("/register", func(c *gin.Context) {
+		var req registerRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid username, email or password"})
+			return
+		}
+
+		hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+		if err != nil {
+			log.Println("hash password:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+			return
+		}
+
+		user := domain.UserObject{
+			Username:     strings.TrimSpace(req.Username),
+			Email:        strings.ToLower(strings.TrimSpace(req.Email)),
+			PasswordHash: string(hash),
+		}
+		err = userRepo.Create(&user)
+		if errors.Is(err, repository.ErrDuplicate) {
+			c.JSON(http.StatusConflict, gin.H{"error": "username or email already taken"})
+			return
+		}
+		if err != nil {
+			log.Println("create user:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+			return
+		}
+		c.JSON(http.StatusCreated, user) // PasswordHash is hidden by json:"-"
+	})
+
+	router.POST("/login", func(c *gin.Context) {
+		var req loginRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "email and password are required"})
+			return
+		}
+
+		user, err := userRepo.GetByEmail(strings.ToLower(strings.TrimSpace(req.Email)))
+		if errors.Is(err, repository.ErrNotFound) {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "wrong email or password"})
+			return
+		}
+		if err != nil {
+			log.Println("get user:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+			return
+		}
+
+		if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)) != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "wrong email or password"})
+			return
+		}
+
+		token, err := auth.CreateToken(jwtSecret, user.ID)
+		if err != nil {
+			log.Println("sign token:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"access_token": token, "user": user})
 	})
 
 	log.Fatal(router.Run(":8080"))

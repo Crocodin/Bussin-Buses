@@ -34,19 +34,26 @@ import '@ionic/react/css/palettes/dark.system.css';
 import './theme/variables.css';
 import BusPost from './pages/BusPost';
 import AddBusPage from './pages/AddBusPage';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import { AuthProvider } from './auth/AuthContext';
 
 setupIonicReact();
 
 const App: React.FC = () => (
   <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route path="/home" element={<Home />} />
-        <Route path="/post/:id" element={<BusPost />} />
-        <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="/add" element={<AddBusPage/>} />
-      </IonRouterOutlet>
-    </IonReactRouter>
+    <AuthProvider>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/post/:id" element={<BusPost />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/add" element={<AddBusPage/>} />
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </AuthProvider>
   </IonApp>
 );
 
