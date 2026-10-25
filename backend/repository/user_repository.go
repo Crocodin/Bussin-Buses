@@ -71,8 +71,7 @@ func (r *SQLiteUserRepository) Create(user *domain.UserObject) error {
 }
 
 func (r *SQLiteUserRepository) Update(user *domain.UserObject) error {
-	res, err := r.db.Exec(`UPDATE users SET profile_picture_url = ? WHERE id = ?`,
-		user.ProfilePictureURL, user.ID)
+	res, err := r.db.Exec(`UPDATE users SET profile_picture_url = ? WHERE id = ?`, user.ProfilePictureURL, user.ID)
 	if err != nil {
 		return err
 	}

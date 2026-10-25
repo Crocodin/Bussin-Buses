@@ -12,6 +12,7 @@ var ErrNotFound = errors.New("not found")
 
 type BusRepository interface {
 	List() ([]domain.BusObject, error)
+	ListForUserId(id int) ([]domain.BusObject, error)
 	GetByID(id int) (domain.BusObject, error)
 	Create(bus *domain.BusObject) error
 	Update(bus *domain.BusObject) error
@@ -84,6 +85,35 @@ func (r *SQLiteBusRepository) List() ([]domain.BusObject, error) {
 		buses = append(buses, b)
 	}
 	rows.Close() // close BEFORE running more queries (we only have 1 connection)
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	for i := range buses {
+		if buses[i].ImageURLs, err = r.imageURLs(buses[i].ID); err != nil {
+			return nil, err
+		}
+	}
+	return buses, nil
+}
+
+func (r *SQLiteBusRepository) ListForUserId(userId int) ([]domain.BusObject, error) {
+	rows, err := r.db.Query(selectBus+" WHERE u.id = ?", userId)
+	if err != nil {
+		return nil, err
+	}
+
+	buses := []domain.BusObject{}
+	for rows.Next() {
+		b, err := scanBus(rows)
+		if err != nil {
+			rows.Close()
+			return nil, err
+		}
+		buses = append(buses, b)
+	}
+	rows.Close()
+
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
