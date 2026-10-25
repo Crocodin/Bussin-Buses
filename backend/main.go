@@ -56,13 +56,14 @@ func main() {
 		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
 	}))
+	protected := router.Group("", auth.RequireAuth(jwtSecret))
 	router.Static("/uploads", "./uploads")
 
-	hub := ws.NewHub()
+	hub := ws.NewHub(jwtSecret)
 	router.GET("/ws", hub.Handle)
 
 	/// ------------ GET
-	router.GET("/buses", func(c *gin.Context) {
+	protected.GET("/buses", func(c *gin.Context) {
 		buses, err := busRepo.List()
 		if err != nil {
 			log.Println("list buses:", err)
@@ -72,7 +73,7 @@ func main() {
 		c.JSON(http.StatusOK, buses)
 	})
 
-	router.GET("/buses/:id", func(c *gin.Context) {
+	protected.GET("/buses/:id", func(c *gin.Context) {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid bus id"})
@@ -93,8 +94,15 @@ func main() {
 	})
 
 	/// ------------ POST
-	router.POST("/buses", func(c *gin.Context) {
+	protected.POST("/buses", func(c *gin.Context) {
 		c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxFiles*maxFileSize)
+
+		userID := c.GetInt("userID")
+		user, err := userRepo.GetByID(userID)
+		if err != nil {
+			c.JSON(http.StatusUnsupportedMediaType, gin.H{"error": "user dose not exist"})
+			return
+		}
 
 		name := strings.TrimSpace(c.PostForm("name"))
 		if name == "" {
@@ -148,7 +156,7 @@ func main() {
 			Name:        name,
 			Description: c.PostForm("description"),
 			ImageURLs:   urls,
-			User:        domain.UserObject{ID: 1},
+			User:        user,
 		}
 
 		if err := busRepo.Create(&bus); err != nil {
@@ -158,7 +166,7 @@ func main() {
 			return
 		}
 
-		hub.Broadcast("post_added", bus)
+		hub.SendToUser(userID, "post_added", bus)
 		c.JSON(http.StatusCreated, bus)
 	})
 

@@ -1,9 +1,7 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import UserObject from "../domain/UserObject";
 import { loginUser } from "../api/authApi";
-
-export const TOKEN_KEY = "bussin_token";
-export const USER_KEY = "bussin_user";
+import { TOKEN_KEY, UNAUTHORIZED_EVENT, USER_KEY } from "./storage";
 
 interface AuthContextValue {
   token: string | null;
@@ -43,6 +41,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
     setUser(null);
   };
+
+  useEffect(() => {
+    const onUnauthorized = () => logout();
+    window.addEventListener(UNAUTHORIZED_EVENT, onUnauthorized);
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, onUnauthorized);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ token, user, isAuthenticated: !!token, login, logout }}>

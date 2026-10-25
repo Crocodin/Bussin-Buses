@@ -1,6 +1,7 @@
 package ws
 
 import (
+	auth "bussin-buses/jwt"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -16,17 +17,19 @@ type Message struct {
 }
 
 type client struct {
-	conn *websocket.Conn
-	send chan []byte
+	conn   *websocket.Conn
+	send   chan []byte
+	userID int
 }
 
 type Hub struct {
 	mu      sync.Mutex // the clients map is touched from many goroutines
 	clients map[*client]struct{}
+	secret  []byte
 }
 
-func NewHub() *Hub {
-	return &Hub{clients: make(map[*client]struct{})}
+func NewHub(secret []byte) *Hub {
+	return &Hub{clients: make(map[*client]struct{}), secret: secret}
 }
 
 var upgrader = websocket.Upgrader{
@@ -44,7 +47,7 @@ func (h *Hub) remove(c *client) {
 	}
 }
 
-func (h *Hub) Broadcast(msgType string, data any) {
+func (h *Hub) SendToUser(userID int, msgType string, data any) {
 	payload, err := json.Marshal(Message{Type: msgType, Data: data})
 	if err != nil {
 		log.Println("ws marshal:", err)
@@ -53,9 +56,12 @@ func (h *Hub) Broadcast(msgType string, data any) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	for c := range h.clients {
+		if c.userID != userID {
+			continue
+		}
 		select {
 		case c.send <- payload:
-		default: // client is too slow, drop it
+		default:
 			delete(h.clients, c)
 			close(c.send)
 		}
@@ -64,12 +70,18 @@ func (h *Hub) Broadcast(msgType string, data any) {
 
 // Handle is the Gin handler for GET /ws.
 func (h *Hub) Handle(c *gin.Context) {
+	userID, err := auth.VerifyToken(h.secret, c.Query("token"))
+	if err != nil {
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Println("ws upgrade:", err)
 		return
 	}
-	cl := &client{conn: conn, send: make(chan []byte, 16)}
+	cl := &client{conn: conn, send: make(chan []byte, 16), userID: userID}
 
 	h.mu.Lock()
 	h.clients[cl] = struct{}{}
