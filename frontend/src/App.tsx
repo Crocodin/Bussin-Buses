@@ -38,6 +38,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import { AuthProvider } from './auth/AuthContext';
 import AuthRedirect from './auth/AuthRedirect';
+import ProfilePage from './pages/ProfilePage';
 
 setupIonicReact();
 
@@ -54,6 +55,7 @@ const App: React.FC = () => (
           <Route path="/post/:id" element={<BusPost />} />
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/add" element={<AddBusPage/>} />
+          <Route path="/profile" element={<ProfilePage/>} />
         </IonRouterOutlet>
       </IonReactRouter>
     </AuthProvider>

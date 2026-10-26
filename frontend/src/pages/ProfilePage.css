@@ -1,0 +1,139 @@
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 0;
+  text-align: center;
+}
+.profile-image-big {
+  display: block;
+  height: min(33.33vh, 280px);
+  aspect-ratio: 1 / 1;
+  height: auto;
+  object-fit: cover;
+  border-radius: 16px;
+  background: var(--ion-color-step-100);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 12%);
+}
+
+/* Username */
+
+.profile-info h1 {
+  margin: 16px 0 18px;
+  color: var(--ion-text-color);
+  font-size: clamp(22px, 4vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  overflow-wrap: anywhere;
+}
+
+/* Button container */
+
+.profile-info > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Buttons */
+
+.button-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 240px);
+  min-height: 44px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  box-sizing: border-box;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    filter 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.button-profile:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
+}
+
+.button-profile:active {
+  transform: scale(0.97);
+}
+
+.button-profile.red {
+  background: var(--ion-color-danger);
+}
+
+.button-profile.blue {
+  background: var(--ion-color-primary);
+}
+
+.button-profile:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 3px;
+}
+
+/* Upload result */
+
+.profile-info ion-text p {
+  max-width: 320px;
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* Space between profile and posts */
+
+.profile-info + * {
+  margin-top: 26px;
+}
+
+/* Hidden file input */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Mobile adjustments */
+
+@media (max-width: 480px) {
+  .profile-info {
+    padding: 20px 14px 0;
+  }
+
+  .profile-image-big {
+    height: 33.333vh;
+  }
+
+  .profile-info h1 {
+    margin: 14px 0 16px;
+    font-size: 23px;
+  }
+
+  .profile-info > div {
+    gap: 9px;
+  }
+
+  .button-profile {
+    width: min(100%, 260px);
+    min-height: 42px;
+  }
+
+  .profile-info + * {
+    margin-top: 22px;
+  }
+}

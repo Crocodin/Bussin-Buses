@@ -1,8 +1,10 @@
 import { useIonRouter } from "@ionic/react";
-import UserObject from "../domain/UserObject"
 import "./PageFooter.css";
+import { useAuth } from "../auth/AuthContext";
+import { IMAGES_BASE_URL } from "../api/baseApi";
 
-const PageFooter = ({ loggedInUser } : { loggedInUser: UserObject | null }) => {
+const PageFooter = () => {
+  const { user } = useAuth()
   const router = useIonRouter();
 
   return (
@@ -16,9 +18,9 @@ const PageFooter = ({ loggedInUser } : { loggedInUser: UserObject | null }) => {
       <div className="add-post-button" onClick={() => router.push('/add')}>
         <img src="./public/add_button.png" alt="add-button.png" />
       </div>
-      <div className="profile-button">
-        {loggedInUser && loggedInUser.profilePictureUrl ? (
-          <img src={loggedInUser.profilePictureUrl} alt="Profile" className="profile-image" />
+      <div className="profile-button" onClick={() => router.push('profile')}>
+        {user && user.profilePictureUrl ? (
+          <img src={IMAGES_BASE_URL + user.profilePictureUrl} alt="Profile" className="profile-image" />
         ) : (
           <img src="./public/default-profile.png" alt="Default Profile" className="profile-image" />
         )}

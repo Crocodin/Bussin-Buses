@@ -38,10 +38,12 @@ func main() {
 	// services
 	authService := service.NewAuthService(userRepo, jwtSecret)
 	busService := service.NewBusService(busRepo, userRepo, imageStore, hub)
+	userService := service.NewUserRepository(userRepo, imageStore)
 
 	r := router.New(router.Deps{
 		Auth:      handler.NewAuthHandler(authService),
 		Bus:       handler.NewBusHandler(busService),
+		User:      handler.NewUserHandler(userService),
 		Hub:       hub,
 		JWTSecret: jwtSecret,
 		UploadDir: uploadDir,

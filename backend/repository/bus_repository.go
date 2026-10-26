@@ -1,11 +1,11 @@
 package repository
 
 import (
+	"bussin-buses/domain"
+
 	"database/sql"
 	"errors"
 	"time"
-
-	"bussin-buses/domain"
 )
 
 var ErrNotFound = errors.New("not found")
@@ -98,7 +98,7 @@ func (r *SQLiteBusRepository) List() ([]domain.BusObject, error) {
 }
 
 func (r *SQLiteBusRepository) ListForUserId(userId int) ([]domain.BusObject, error) {
-	rows, err := r.db.Query(selectBus+" WHERE u.id = ?", userId)
+	rows, err := r.db.Query(selectBus+` WHERE u.id = ? ORDER BY position`, userId)
 	if err != nil {
 		return nil, err
 	}

@@ -10,7 +10,7 @@ const Home: React.FC = () => {
         <ExploreContainer />
       </IonContent>
       <IonFooter>
-        <PageFooter loggedInUser={null} />
+        <PageFooter />
       </IonFooter>
     </IonPage>
   );

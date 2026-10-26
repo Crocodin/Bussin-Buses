@@ -1,18 +1,26 @@
 import './ExploreContainer.css';
 import BusPostPreview from './BusPostPreview';
 import { useEffect, useState } from 'react';
-import { fetchBuses } from '../api/busApi';
+import { fetchBuses, fetchUserBusses } from '../api/busApi';
 import BusObject  from '../domain/BusObject'
 import { useBusSocket } from '../api/useBusSocket';
+import UserObject from '../domain/UserObject';
 
-interface ContainerProps { }
+interface ContainerProps { 
+  user?: UserObject
+}
 
-const ExploreContainer: React.FC<ContainerProps> = () => {
+const ExploreContainer: React.FC<ContainerProps> = ({user}) => {
   const [buses, setBuses] = useState<BusObject[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchBuses().then(setBuses).catch((e) => setError(e));
+    if (!user) {
+      fetchBuses().then(setBuses).catch((e) => setError(e));
+    } else {
+      // if the user is specified it means we want to fetch only the post of that one user
+      fetchUserBusses(user).then(setBuses).catch((e) => setError(e));
+    }
   }, []);
 
   useBusSocket((bus) =>

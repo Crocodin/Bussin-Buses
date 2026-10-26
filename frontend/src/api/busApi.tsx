@@ -1,8 +1,14 @@
 import { api } from "./baseApi";
 import BusObject from "../domain/BusObject";
+import UserObject from "../domain/UserObject";
 
 export async function fetchBuses(): Promise<BusObject[]> {
   const res = await api.get<BusObject[]>("/buses");
+  return res.data;
+}
+
+export async function fetchUserBusses(user: UserObject): Promise<BusObject[]> {
+  const res = await api.get<BusObject[]>(`/buses/user/${user.id}`);
   return res.data;
 }
 

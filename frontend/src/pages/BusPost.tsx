@@ -86,7 +86,7 @@ const BusPost = () => {
         )}
       </IonContent>
       <IonFooter>
-        <PageFooter loggedInUser={null} />
+        <PageFooter />
       </IonFooter>
     </IonPage>
   );

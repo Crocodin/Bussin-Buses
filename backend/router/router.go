@@ -12,6 +12,7 @@ import (
 type Deps struct {
 	Auth      *handler.AuthHandler
 	Bus       *handler.BusHandler
+	User      *handler.UserHandler
 	Hub       *ws.Hub
 	JWTSecret []byte
 	UploadDir string
@@ -35,7 +36,9 @@ func New(d Deps) *gin.Engine {
 	api := r.Group("", auth.RequireAuth(d.JWTSecret))
 	api.GET("/buses", d.Bus.List)
 	api.GET("/buses/:id", d.Bus.Get)
+	api.GET("/buses/user/:id", d.Bus.ListForUserId)
 	api.POST("/buses", d.Bus.Create)
+	api.PUT("/users/me/picture", d.User.UpdateProfilePicture)
 
 	return r
 }

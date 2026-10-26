@@ -1,10 +1,9 @@
 package handler
 
 import (
+	"bussin-buses/service"
 	"net/http"
 	"strconv"
-
-	"bussin-buses/service"
 
 	"github.com/gin-gonic/gin"
 )

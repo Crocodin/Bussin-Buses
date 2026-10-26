@@ -277,7 +277,7 @@ const AddBusPage: React.FC = () => {
 
       </IonContent>
       <IonFooter>
-        <PageFooter loggedInUser={null} />
+        <PageFooter />
       </IonFooter>
     </IonPage>
   );
