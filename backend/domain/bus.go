@@ -11,3 +11,11 @@ type BusObject struct {
 	User        UserObject `json:"user"`
 	Timestamp   time.Time  `json:"timestamp"`
 }
+
+type BusFilter struct {
+	BeforeID *int       // for pagination
+	Before   *time.Time // only buses created before this moment (the pagination cursor)
+	Search   string     // substring of the bus name
+	Limit    int
+	UserID   *int
+}

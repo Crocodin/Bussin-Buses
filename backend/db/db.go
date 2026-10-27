@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS bus_images (
 );`
 
 func Open(path string) (*sql.DB, error) {
-	conn, err := sql.Open("sqlite", "file:"+path+"?_pragma=foreign_keys(1)")
+	conn, err := sql.Open("sqlite", "file:"+path+"?_pragma=foreign_keys(1)&_time_format=sqlite")
 	if err != nil {
 		return nil, err
 	}

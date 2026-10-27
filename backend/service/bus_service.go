@@ -42,16 +42,12 @@ func NewBusService(buses repository.BusRepository, users repository.UserReposito
 	return &BusService{buses: buses, users: users, images: images, notify: notify}
 }
 
-func (s *BusService) List() ([]domain.BusObject, error) {
-	return s.buses.List()
+func (s *BusService) List(f domain.BusFilter) ([]domain.BusObject, error) {
+	return s.buses.List(f)
 }
 
 func (s *BusService) GetByID(id int) (domain.BusObject, error) {
 	return s.buses.GetByID(id)
-}
-
-func (s *BusService) ListForUserId(id int) ([]domain.BusObject, error) {
-	return s.buses.ListForUserId(id)
 }
 
 func (s *BusService) Create(userID int, in CreateBusInput) (domain.BusObject, error) {

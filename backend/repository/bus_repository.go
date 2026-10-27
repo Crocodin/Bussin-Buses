@@ -2,6 +2,7 @@ package repository
 
 import (
 	"bussin-buses/domain"
+	"strings"
 
 	"database/sql"
 	"errors"
@@ -11,8 +12,7 @@ import (
 var ErrNotFound = errors.New("not found")
 
 type BusRepository interface {
-	List() ([]domain.BusObject, error)
-	ListForUserId(id int) ([]domain.BusObject, error)
+	List(f domain.BusFilter) ([]domain.BusObject, error)
 	GetByID(id int) (domain.BusObject, error)
 	Create(bus *domain.BusObject) error
 	Update(bus *domain.BusObject) error
@@ -69,36 +69,46 @@ func (r *SQLiteBusRepository) GetByID(id int) (domain.BusObject, error) {
 	return b, err
 }
 
-func (r *SQLiteBusRepository) List() ([]domain.BusObject, error) {
-	rows, err := r.db.Query(selectBus + ` ORDER BY b.created_at DESC`)
-	if err != nil {
-		return nil, err
-	}
-
-	buses := []domain.BusObject{}
-	for rows.Next() {
-		b, err := scanBus(rows)
-		if err != nil {
-			rows.Close()
-			return nil, err
-		}
-		buses = append(buses, b)
-	}
-	rows.Close() // close BEFORE running more queries (we only have 1 connection)
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	for i := range buses {
-		if buses[i].ImageURLs, err = r.imageURLs(buses[i].ID); err != nil {
-			return nil, err
-		}
-	}
-	return buses, nil
+// Search text is user input, so % and _ must not act as wildcards.
+func escapeLike(s string) string {
+	s = strings.ReplaceAll(s, `\`, `\\`)
+	s = strings.ReplaceAll(s, `%`, `\%`)
+	s = strings.ReplaceAll(s, `_`, `\_`)
+	return s
 }
 
-func (r *SQLiteBusRepository) ListForUserId(userId int) ([]domain.BusObject, error) {
-	rows, err := r.db.Query(selectBus+` WHERE u.id = ? ORDER BY position`, userId)
+func (r *SQLiteBusRepository) List(f domain.BusFilter) ([]domain.BusObject, error) {
+	var conds []string
+	var args []any
+
+	if f.Before != nil {
+		conds = append(conds, "b.created_at < ?")
+		args = append(args, f.Before.UTC())
+	}
+	if f.Search != "" {
+		conds = append(conds, `b.name LIKE ? ESCAPE '\'`)
+		args = append(args, "%"+escapeLike(f.Search)+"%")
+	}
+	if f.UserID != nil {
+		conds = append(conds, `u.id = ?`)
+		args = append(args, *f.UserID)
+	}
+	if f.BeforeID != nil {
+		conds = append(conds, "b.id < ?")
+		args = append(args, *f.BeforeID)
+	}
+
+	query := selectBus
+	if len(conds) > 0 {
+		query += " WHERE " + strings.Join(conds, " AND ")
+	}
+	query += " ORDER BY b.created_at DESC, b.id DESC"
+	if f.Limit > 0 {
+		query += " LIMIT ?"
+		args = append(args, f.Limit)
+	}
+
+	rows, err := r.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -112,8 +122,7 @@ func (r *SQLiteBusRepository) ListForUserId(userId int) ([]domain.BusObject, err
 		}
 		buses = append(buses, b)
 	}
-	rows.Close()
-
+	rows.Close() // before the image queries, because we only have one connection
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
