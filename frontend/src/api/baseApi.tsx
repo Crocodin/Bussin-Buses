@@ -29,4 +29,13 @@ api.interceptors.response.use(
   }
 );
 
+export async function health(): Promise<boolean> {
+  try {
+    await api.get("/health", { timeout: 3000 }); // short timeout, so an unreachable server is noticed fast
+    return true;
+  } catch (e: any) {
+    return !!e.response; // any HTTP response (even an error) proves the server is reachable
+  }
+}
+
 export { api, IMAGES_BASE_URL }

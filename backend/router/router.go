@@ -4,6 +4,7 @@ import (
 	"bussin-buses/handler"
 	auth "bussin-buses/jwt"
 	"bussin-buses/ws"
+	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -31,6 +32,10 @@ func New(d Deps) *gin.Engine {
 	r.POST("/register", d.Auth.Register)
 	r.POST("/login", d.Auth.Login)
 	r.GET("/ws", d.Hub.Handle)
+
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
 
 	// protected: a valid JWT is required
 	api := r.Group("", auth.RequireAuth(d.JWTSecret))

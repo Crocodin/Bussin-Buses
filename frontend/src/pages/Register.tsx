@@ -1,7 +1,8 @@
-import { IonButton, IonCardContent, IonContent, IonInput, IonItem, IonPage, IonSpinner, IonText, useIonRouter } from "@ionic/react";
+import { IonButton, IonCardContent, IonContent, IonHeader, IonInput, IonItem, IonPage, IonSpinner, IonText, useIonRouter } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { registerUser } from "../api/authApi";
 import { useAuth } from "../auth/AuthContext";
+import NetworkStatus from "../components/NetworkStatus";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -43,6 +44,9 @@ export default function Register() {
 
   return (
     <IonPage>
+      <IonHeader>
+        <NetworkStatus />
+      </IonHeader>
       <IonContent className="ion-padding">
         <IonCardContent>
           <h2>Join Bussin' Buses</h2>

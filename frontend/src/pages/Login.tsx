@@ -1,6 +1,7 @@
-import { IonButton, IonCardContent, IonContent, IonInput, IonItem, IonPage, IonSpinner, IonText, useIonRouter } from "@ionic/react";
+import { IonButton, IonCardContent, IonContent, IonHeader, IonInput, IonItem, IonPage, IonSpinner, IonText, useIonRouter } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
+import NetworkStatus from "../components/NetworkStatus";
 
 export default function Login() {
   const router = useIonRouter();
@@ -39,6 +40,10 @@ export default function Login() {
 
   return (
     <IonPage>
+      <IonHeader>
+        <NetworkStatus />
+      </IonHeader>
+      
       <IonContent className="ion-padding">
         <IonCardContent>
           <h2>Welcome back</h2>
