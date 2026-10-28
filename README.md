@@ -34,7 +34,8 @@ Bussin' Buses is a bus spotting app. Users upload pictures of buses they've seen
 
 ## How to run?
 
->[!NOTE] You need go version 1.27.2 and Node.js and the Ionic CLI
+> [!NOTE]
+> You need go version 1.27.2 and Node.js and the Ionic CLI
 
 ### Backend
 
