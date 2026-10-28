@@ -1,0 +1,15 @@
+.pending-banner {
+  padding: 6px 12px;
+  font-size: 13px;
+  text-align: center;
+  background: var(--ion-color-light, #f4f5f8);
+  color: var(--ion-color-dark, #222);
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+.pending-failed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}

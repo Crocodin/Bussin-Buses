@@ -18,4 +18,10 @@ interface BusFilter {
   id?: number;
 }
 
-export type { BusObject, BusFilter };
+interface NewBusInput {
+  name: string;
+  description: string;
+  images: File[];
+}
+
+export type { BusObject, BusFilter, NewBusInput };

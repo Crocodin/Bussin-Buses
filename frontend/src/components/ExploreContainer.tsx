@@ -6,6 +6,7 @@ import { fetchBuses } from "../api/busApi";
 import { useBusSocket } from "../api/useBusSocket";
 import BusPostPreview from "./BusPostPreview";
 import "./ExploreContainer.css";
+import { useOutbox } from "../network/OutboxContext";
 
 const PAGE_SIZE = 20;
 
@@ -24,6 +25,7 @@ const ExploreContainer: React.FC<ContainerProps> = ({ user = null }) => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { pending } = useOutbox();
 
   const [filterParams, setFilterParams] = useState<BusFilter>({});
   const [searchText, setSearchText] = useState("");
@@ -155,6 +157,9 @@ const ExploreContainer: React.FC<ContainerProps> = ({ user = null }) => {
       {!loading && !error && buses.length === 0 && <p className="filter-message">No buses found.</p>}
 
       <div className="post-list">
+        {pending.filter((p) => !user || p.userId === user.id).map((p) => (
+          <BusPostPreview key={p.localId} previewUrl={URL.createObjectURL(p.images[0])}/>
+        ))}
         {buses.map((bus) => (
           <BusPostPreview key={bus.id} busObject={bus} />
         ))}

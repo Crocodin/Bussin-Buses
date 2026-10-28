@@ -1,5 +1,5 @@
 
-import { useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import {
   IonButton,
   IonCard,
@@ -24,9 +24,9 @@ import {
   trashOutline,
 } from "ionicons/icons";
 
-import { postBus } from "../api/busApi";
 import "./AddBusPage.css";
 import PageFooter from "../components/PageFooter";
+import { useOutbox } from "../network/OutboxContext";
 
 const AddBusPage: React.FC = () => {
   const [name, setName] = useState("");
@@ -35,6 +35,7 @@ const AddBusPage: React.FC = () => {
   const [result, setResult] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const { submitBus } = useOutbox();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -84,9 +85,9 @@ const AddBusPage: React.FC = () => {
     setResult("");
 
     try {
-      await postBus(name.trim(), description.trim(), files);
+      const status = await submitBus({ name: name.trim(), description: description.trim(), images: files });
 
-      setResult('Bus added successfully!');
+      setResult(status === "sent" ? "Posted!" : "Saved on this device. It will be sent when you're back online.");
       setIsSuccess(true);
 
       setName("");

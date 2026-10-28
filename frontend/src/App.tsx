@@ -39,25 +39,32 @@ import Register from './pages/Register';
 import { AuthProvider } from './auth/AuthContext';
 import AuthRedirect from './auth/AuthRedirect';
 import ProfilePage from './pages/ProfilePage';
+import { NetworkProvider } from './network/NetworkContext';
+import { OutboxProvider } from './network/OutboxContext';
+import NetworkStatus from './components/NetworkStatus';
 
 setupIonicReact();
 
 const App: React.FC = () => (
   <IonApp>
-    <AuthProvider>
-      <IonReactRouter>
-        <AuthRedirect/>
-        
-        <IonRouterOutlet>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/post/:id" element={<BusPost />} />
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/add" element={<AddBusPage/>} />
-          <Route path="/profile" element={<ProfilePage/>} />
-        </IonRouterOutlet>
-      </IonReactRouter>
+    <AuthProvider> 
+      <NetworkProvider>
+        <OutboxProvider>
+          <IonReactRouter>
+            <AuthRedirect/>
+            <NetworkStatus/>
+            <IonRouterOutlet>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/post/:id" element={<BusPost />} />
+              <Route path="/" element={<Navigate to="/login" replace />} />
+              <Route path="/add" element={<AddBusPage/>} />
+              <Route path="/profile" element={<ProfilePage/>} />
+            </IonRouterOutlet>
+          </IonReactRouter>
+        </OutboxProvider>
+      </NetworkProvider>
     </AuthProvider>
   </IonApp>
 );
