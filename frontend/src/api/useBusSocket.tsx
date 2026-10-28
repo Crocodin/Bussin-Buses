@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import BusObject from "../domain/BusObject";
+import { BusObject } from "../domain/BusObject";
 import { useAuth } from "../auth/AuthContext";
 
 const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8080/ws";

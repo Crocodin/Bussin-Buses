@@ -10,4 +10,12 @@ interface BusObject {
   timestamp: string;
 }
 
-export default BusObject;
+interface BusFilter {
+  beforeId?: number
+  before?: string;
+  search?: string;
+  limit?: number;
+  id?: number;
+}
+
+export type { BusObject, BusFilter };

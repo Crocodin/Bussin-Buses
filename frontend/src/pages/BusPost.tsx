@@ -1,4 +1,4 @@
-import BusObject from '../domain/BusObject';
+import { BusObject } from '../domain/BusObject';
 import "./BusPost.css";
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';

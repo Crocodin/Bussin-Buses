@@ -8,26 +8,19 @@ import {
   IonCardTitle,
   IonContent,
   IonFooter,
-  IonHeader,
   IonIcon,
   IonInput,
   IonItem,
-  IonLabel,
   IonPage,
   IonSpinner,
   IonText,
   IonTextarea,
-  IonTitle,
-  IonToolbar,
 } from "@ionic/react";
 
 import {
   addOutline,
-  busOutline,
   cameraOutline,
   closeCircle,
-  cloudUploadOutline,
-  imagesOutline,
   trashOutline,
 } from "ionicons/icons";
 

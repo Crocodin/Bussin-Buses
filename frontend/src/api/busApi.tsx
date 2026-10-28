@@ -1,14 +1,7 @@
 import { api } from "./baseApi";
-import BusObject from "../domain/BusObject";
-import UserObject from "../domain/UserObject";
+import { BusObject, BusFilter } from "../domain/BusObject";
 
-export async function fetchBuses(params: {
-  beforeId?: number
-  before?: string;
-  search?: string;
-  limit?: number;
-  id?: number;
-} = {}): Promise<BusObject[]> {
+export async function fetchBuses(params: BusFilter = {}): Promise<BusObject[]> {
   const res = await api.get<BusObject[]>("/buses", { params });
   return res.data;
 }

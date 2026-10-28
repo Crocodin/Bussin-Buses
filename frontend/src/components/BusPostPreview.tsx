@@ -1,5 +1,5 @@
 import { useIonRouter } from "@ionic/react";
-import BusObject  from "../domain/BusObject";
+import { BusObject }  from "../domain/BusObject";
 import "./BusPostPreview.css";
 import { IMAGES_BASE_URL } from "../api/baseApi";
 
